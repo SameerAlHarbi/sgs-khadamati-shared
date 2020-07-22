@@ -1,12 +1,19 @@
 {
-  "name": "sgs-khadamati-shared",
+  "name": "@sameer-alharbi/sgs-khadamati-shared",
   "version": "1.0.0",
-  "description": "",
+  "description": "shared middlewares and utilities for sgs khadamati",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SameerAlHarbi/sgs-khadamati-shared.git"
+  },
+  "author": "Sameer Al Harbi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SameerAlHarbi/sgs-khadamati-shared/issues"
+  },
+  "homepage": "https://github.com/SameerAlHarbi/sgs-khadamati-shared#readme"
 }
