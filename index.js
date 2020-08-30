@@ -1,10 +1,10 @@
-exports.parseDate = (dateText, dateFormat = "YYYY-MM-DDTHH:mm:ss") => {
+const dateUtil = require('./utils/date.util');
+const queryMiddleware = require('./middlewares/query.middleware');
+const ApiClient = require('./utils/api-client');
 
-    if(!dateText) {
-        return undefined;
-    }
 
-    console.log('Today');
-    
-    return new Date();
+module.exports = {
+    dateUtil,
+    queryMiddleware,
+    ApiClient: ApiClient
 }

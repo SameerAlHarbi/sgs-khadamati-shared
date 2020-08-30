@@ -1,6 +1,6 @@
 {
-  "name": "@sameer-alharbi/sgs-khadamati-shared",
-  "version": "1.0.0",
+  "name": "@abujude/sgs-khadamati",
+  "version": "1.2.6",
   "description": "shared middlewares and utilities for sgs khadamati",
   "main": "index.js",
   "scripts": {
@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/SameerAlHarbi/sgs-khadamati-shared/issues"
   },
-  "homepage": "https://github.com/SameerAlHarbi/sgs-khadamati-shared#readme"
+  "homepage": "https://github.com/SameerAlHarbi/sgs-khadamati-shared#readme",
+  "dependencies": {
+    "date-and-time": "^0.13.1",
+    "node-fetch": "^2.6.0"
+  }
 }
