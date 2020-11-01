@@ -1,6 +1,6 @@
 {
   "name": "@abujude/sgs-khadamati",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "shared middlewares and utilities for sgs khadamati",
   "main": "index.js",
   "scripts": {

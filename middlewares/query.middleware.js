@@ -58,6 +58,12 @@ exports.validateNumberParam = (paramName) => {
     }
 }
 
+/**
+ * Middleware function that parse the specified dates parameters in the request object to dates objects.
+ * @param {string} paramsNames - Date parameters names in request.
+ * @param {string} dateFormatParamName - Date format parameter name in request.
+ * @return {function} - Middleware function.
+ */
 exports.parseDate = (paramsNames, dateFormatParamName = 'dateFormat') => {
     return function(req, res, next) {
         
