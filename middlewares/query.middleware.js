@@ -7,8 +7,8 @@ exports.parseQuery = (req, res, next) => {
     req.query.ids = req.query.ids ? 
         req.query.ids.split(',') : [];
 
-    req.query.employees = req.query.employees ? 
-        req.query.employees.split(',') : [];
+    req.query.employeesIds = req.query.employeesIds ? 
+        req.query.employeesIds.split(',') : [];
 
     req.query.dateFormat = req.query.dateFormat ||
         dateUtil.defaultTextFormat;
@@ -82,5 +82,23 @@ exports.parseDate = (paramsNames, dateFormatParamName = 'dateFormat') => {
         });
 
         next();
+    }
+}
+
+exports.split = (paramsNames, symbol = ',') => {
+    return function(req, res, next) {
+
+        if(!paramsNames || paramsNames.length < 1) {
+            const error = new Error(`Invalid parameters names!`);
+            error.httpStatusCode = 400;
+            return next(error);
+        }
+
+        paramsNames.forEach(paramName => {
+            req.query[paramName] = req.query[paramName] ?
+                 req.query[paramName].split(',') : [];
+        });
+
+        return next();
     }
 }
