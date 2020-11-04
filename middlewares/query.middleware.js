@@ -2,7 +2,7 @@ const dateUtil = require('../utils/date.util');
 
 exports.parseQuery = (req, res, next) => {
     
-    req.query.lang = req.query.lang || 'A';
+    req.query.lang = req.query.lang.toUpperCase() || 'A';
 
     req.query.ids = req.query.ids ? 
         req.query.ids.split(',') : [];
@@ -58,11 +58,18 @@ exports.validateNumberParam = (paramName) => {
     }
 }
 
+exports.setLanguage = (req, res, next) => {
+
+    req.query.lang = req.query.lang.toUpperCase() || 'A';
+
+    next();
+}
+
 /**
  * Middleware function that parse the specified dates parameters in the request object to dates objects.
- * @param {string} paramsNames - Date parameters names in request.
+ * @param {array<string>} paramsNames - Date parameters names in request.
  * @param {string} dateFormatParamName - Date format parameter name in request.
- * @return {function} - Middleware function.
+ * @return {function} Middleware function.
  */
 exports.parseDate = (paramsNames, dateFormatParamName = 'dateFormat') => {
     return function(req, res, next) {
@@ -85,6 +92,12 @@ exports.parseDate = (paramsNames, dateFormatParamName = 'dateFormat') => {
     }
 }
 
+/**
+ * Middleware function that split the specified parameters in the request object to array of strings.
+ * @param {Array<string>} paramsNames - Array of parameters names in the request object to be splited.
+ * @param {string} symbol - Seplit character.
+ * @return {function} Middleware function..
+ */
 exports.split = (paramsNames, symbol = ',') => {
     return function(req, res, next) {
 
@@ -96,7 +109,7 @@ exports.split = (paramsNames, symbol = ',') => {
 
         paramsNames.forEach(paramName => {
             req.query[paramName] = req.query[paramName] ?
-                 req.query[paramName].split(',') : [];
+                 req.query[paramName].split(symbol) : [];
         });
 
         return next();
