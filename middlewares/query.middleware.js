@@ -2,7 +2,7 @@ const dateUtil = require('../utils/date.util');
 
 exports.parseQuery = (req, res, next) => {
     
-    req.query.lang = req.query.lang.toUpperCase() || 'A';
+    req.query.lang = req.query.lang ?  req.query.lang.toUpperCase() : 'A';
 
     req.query.ids = req.query.ids ? 
         req.query.ids.split(',') : [];
@@ -60,7 +60,7 @@ exports.validateNumberParam = (paramName) => {
 
 exports.setLanguage = (req, res, next) => {
 
-    req.query.lang = req.query.lang.toUpperCase() || 'A';
+    req.query.lang = req.query.lang ?  req.query.lang.toUpperCase() : 'A';
 
     next();
 }
