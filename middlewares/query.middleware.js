@@ -58,11 +58,20 @@ exports.validateNumberParam = (paramName) => {
     }
 }
 
-exports.setLanguage = (req, res, next) => {
+/**
+ * 
+ * @param {string} defaultLanguage - The default language for the request if not exist.
+ * @param {string} paramName - The language parameter name int request object.
+ * @returns {function} Middleware function.
+ */
+exports.setLanguage = (defaultLanguage = 'A', paramName = 'lang') => {
 
-    req.query.lang = req.query.lang ?  req.query.lang.toUpperCase() : 'A';
+    return function(req, res, next) {
 
-    next();
+        req.query[paramName] = req.query[paramName] ?  req.query[paramName].toUpperCase() : defaultLanguage;
+
+        next();
+    }
 }
 
 /**
