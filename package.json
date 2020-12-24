@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/SameerAlHarbi/sgs-khadamati-shared#readme",
   "dependencies": {
-    "date-and-time": "^0.13.1",
+    "date-and-time": "^0.14.2",
     "node-fetch": "^2.6.1"
   }
 }
