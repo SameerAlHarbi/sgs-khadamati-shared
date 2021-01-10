@@ -8,41 +8,41 @@ exports.defaultSapTextFormat = 'YYYYMMDD';
 exports.defaultSapCompiledFormat = 
     dateUtil.compile(this.defaultSapTextFormat);
 
-exports.parseDate = (dateText, dateFormat = this.defaultCompiledFormat) => {
+exports.parseDate = (dateText, dateFormat = this.defaultCompiledFormat, utc = false) => {
 
     if(!dateText) {
         return NaN;
     }
 
-    return dateUtil.parse(dateText, dateFormat, false);
+    return dateUtil.parse(dateText, dateFormat, utc);
 
 }
 
-exports.formatDate = (dateObject, dateFormat = this.defaultCompiledFormat) => {
+exports.formatDate = (dateObject, dateFormat = this.defaultCompiledFormat, utc = false) => {
 
     if(!dateObject || isNaN(dateObject)) {
         return "";
     }
 
-    let formatedDate = dateUtil.format(dateObject, dateFormat);
+    const formatedDate = dateUtil.format(dateObject, dateFormat, utc);
 
     return formatedDate;
 
 }
 
-exports.convertFormat = (dateText, dateFormat, newFormat) => {
+exports.convertFormat = (dateText, dateFormat, newFormat, utc = false) => {
 
     if(!dateText || !dateFormat || !newFormat) {
         return "";
     }
 
-    let parsedDate = this.parseDate(dateText, dateFormat);
+    const parsedDate = this.parseDate(dateText, dateFormat, utc);
 
     if(!parsedDate || isNaN(parsedDate)) {
         return "";
     }
 
-    let formatedDate = this.formatDate(parsedDate, newFormat);
+    const formatedDate = this.formatDate(parsedDate, newFormat, utc);
     return formatedDate;
 }
 

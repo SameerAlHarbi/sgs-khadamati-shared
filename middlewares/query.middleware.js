@@ -4,32 +4,37 @@ exports.parseQuery = (req, res, next) => {
     
     req.query.lang = req.query.lang ?  req.query.lang.toUpperCase() : 'A';
 
-    req.query.ids = req.query.ids ? 
-        req.query.ids.split(',') : [];
+    if(req.query.ids)
+        req.query.ids = req.query.ids.split(',');
 
-    req.query.employeesIds = req.query.employeesIds ? 
-        req.query.employeesIds.split(',') : [];
+    if(req.query.employeesIds)
+        req.query.employeesIds = req.query.employeesIds.split(',');
 
     req.query.dateFormat = req.query.dateFormat ||
         dateUtil.defaultTextFormat;
 
-    req.query.fromDate = dateUtil.parseDate(req.query.fromDate, 
-        req.query.dateFormat);
+    if(req.query.fromDate)  
+        req.query.fromDate = dateUtil.parseDate(req.query.fromDate, 
+            req.query.dateFormat);
 
-    req.query.toDate = dateUtil.parseDate(req.query.toDate, 
-        req.query.dateFormat);
+    if(req.query.toDate)  
+        req.query.toDate = dateUtil.parseDate(req.query.toDate, 
+            req.query.dateFormat);
 
-    req.query.registerFromDate = dateUtil.parseDate(req.query.registerFromDate, 
-        req.query.dateFormat);
+    if(req.query.registerFromDate)
+        req.query.registerFromDate = dateUtil.parseDate(req.query.registerFromDate, 
+            req.query.dateFormat);
 
-    req.query.registerToDate = dateUtil.parseDate(req.query.registerToDate, 
-        req.query.dateFormat);
+    if(req.query.registerToDate)
+        req.query.registerToDate = dateUtil.parseDate(req.query.registerToDate, 
+            req.query.dateFormat);
 
-    req.query.Types = req.query.Types ? 
-        req.query.Types.split(',') : [];
+    if(req.query.Types)
+        req.query.Types = req.query.Types.split(',');
 
-    req.query.effectDate = dateUtil.parseDate(req.query.effectDate, 
-        req.query.dateFormat);
+    if(req.query.effectDate)
+        req.query.effectDate = dateUtil.parseDate(req.query.effectDate, 
+            req.query.dateFormat);
 
     next();
 }
@@ -59,9 +64,9 @@ exports.validateNumberParam = (paramName) => {
 }
 
 /**
- * 
+ * Middleware function that set the default language for the request.
  * @param {string} defaultLanguage - The default language for the request if not exist.
- * @param {string} paramName - The language parameter name int request object.
+ * @param {string} paramName - The language parameter name in the request object.
  * @returns {function} Middleware function.
  */
 exports.setLanguage = (defaultLanguage = 'A', paramName = 'lang') => {
