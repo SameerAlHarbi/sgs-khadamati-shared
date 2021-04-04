@@ -85,7 +85,7 @@ exports.setLanguage = (defaultLanguage = 'A', paramName = 'lang') => {
  * @param {string} dateFormatParamName - Date format parameter name in request.
  * @return {function} Middleware function.
  */
-exports.parseDate = (paramsNames, dateFormatParamName = 'dateFormat') => {
+exports.parseDate = (paramsNames, dateFormatParamName = 'dateFormat', removeNaN = true) => {
     return function(req, res, next) {
         
         if(!paramsNames || paramsNames.length < 1) {
@@ -98,8 +98,16 @@ exports.parseDate = (paramsNames, dateFormatParamName = 'dateFormat') => {
             dateUtil.defaultTextFormat;
 
         paramsNames.forEach(paramName => {
-            req.query[paramName] = dateUtil.parseDate(req.query[paramName], 
-                req.query[dateFormatParamName]);
+
+            if(req.query[paramName]) {
+                req.query[paramName] = dateUtil.parseDate(req.query[paramName], 
+                    req.query[dateFormatParamName]);
+            } 
+            
+            if(req.query[paramName] == NaN && removeNaN) {
+               delete req.query[paramName] ;
+            }
+
         });
 
         next();
@@ -128,4 +136,32 @@ exports.split = (paramsNames, symbol = ',') => {
 
         return next();
     }
+}
+
+/**
+ * Middleware function that parse the specified boolean parameters in the request object to boolean objects.
+ * @param {Array<string>} paramsNames - Array of parameters names in the request object to be parsed.
+ * @param {string} defaultValue - Default value for boolean object.
+ * @returns Middleware function..
+ */
+exports.parseBoolean = (paramsNames, defaultValue = false) => {
+
+    return function(req, res, next) {
+
+        if(!paramsNames || paramsNames.length < 1) {
+            const error = new Error(`Invalid parameters names!`);
+            error.httpStatusCode = 400;
+            return next(error);
+        }
+
+        paramsNames.forEach(paramName => {
+
+                req.query[paramName] = req.query[paramName] ? 
+                    req.query[paramName] === 'true' : defaultValue ;
+
+        });
+
+        return next();
+    }
+
 }
