@@ -102,10 +102,10 @@ exports.parseDate = (paramsNames, dateFormatParamName = 'dateFormat', removeNaN 
             if(req.query[paramName]) {
                 req.query[paramName] = dateUtil.parseDate(req.query[paramName], 
                     req.query[dateFormatParamName]);
-            } 
-            
-            if(req.query[paramName] == NaN && removeNaN) {
-               delete req.query[paramName] ;
+
+                if (isNaN(req.query[paramName].getTime()) && removeNaN) {
+                    delete req.query[paramName] ;
+                }
             }
 
         });
