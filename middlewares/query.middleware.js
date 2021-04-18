@@ -83,35 +83,44 @@ exports.setLanguage = (defaultLanguage = 'A', paramName = 'lang') => {
  * Middleware function that parse the specified dates parameters in the request object to dates objects.
  * @param {array<string>} paramsNames - Date parameters names in request.
  * @param {string} dateFormatParamName - Date format parameter name in request.
+ * @param {boolean} removeNaN - Remove parameter and to be set it as undefined if the result of parsing date is NAN.
+ * @param {boolean} utc -Parse date as utc.
  * @return {function} Middleware function.
  */
-exports.parseDate = (paramsNames, dateFormatParamName = 'dateFormat', removeNaN = true) => {
-    return function(req, res, next) {
-        
-        if(!paramsNames || paramsNames.length < 1) {
-            const error = new Error(`Invalid dates parameters names!`);
-            error.httpStatusCode = 400;
-            return next(error);
-        }
+exports.parseDate = (paramsNames
+    , dateFormatParamName = 'dateFormat'
+    , removeNaN = true
+    , utc = false
+    , parseBody = false) => {
 
-        req.query[dateFormatParamName] = req.query[dateFormatParamName] || 
-            dateUtil.defaultTextFormat;
-
-        paramsNames.forEach(paramName => {
-
-            if(req.query[paramName]) {
-                req.query[paramName] = dateUtil.parseDate(req.query[paramName], 
-                    req.query[dateFormatParamName]);
-
-                if (isNaN(req.query[paramName].getTime()) && removeNaN) {
-                    delete req.query[paramName] ;
-                }
+        return function(req, res, next) {
+            
+            if(!paramsNames || paramsNames.length < 1) {
+                const error = new Error(`Invalid dates parameters names!`);
+                error.httpStatusCode = 400;
+                return next(error);
             }
 
-        });
+            const reqParams = !parseBody ? req.query : req.body;
 
-        next();
-    }
+            reqParams[dateFormatParamName] = reqParams[dateFormatParamName] || 
+                dateUtil.defaultTextFormat;
+
+            paramsNames.forEach(paramName => {
+
+                if(reqParams[paramName]) {
+                    reqParams[paramName] = dateUtil.parseDate(reqParams[paramName], 
+                        reqParams[dateFormatParamName], utc);
+
+                    if (isNaN(reqParams[paramName].getTime()) && removeNaN) {
+                        delete reqParams[paramName] ;
+                    }
+                }
+
+            });
+
+            next();
+        }
 }
 
 /**

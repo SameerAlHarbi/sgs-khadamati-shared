@@ -8,6 +8,8 @@ exports.defaultSapTextFormat = 'YYYYMMDD';
 exports.defaultSapCompiledFormat = 
     dateUtil.compile(this.defaultSapTextFormat);
 
+exports.defaultSapTimeFormat = 'HHmmss';
+
 exports.parseDate = (dateText, dateFormat = this.defaultCompiledFormat, utc = false) => {
 
     if(!dateText) {
