@@ -49,7 +49,7 @@ exports.convertFormat = (dateText, dateFormat, newFormat, utc = false) => {
 }
 
 exports.calcDaysDuration = (startDateObject, endDateObject) => {
-    return dateUtil.subtract(endDateObject, startDateObject).toDays();
+    return dateUtil.subtract(endDateObject, startDateObject).toDays() + 1;
 }
 
 exports.addDays = (dateObject ,daysCount) => {

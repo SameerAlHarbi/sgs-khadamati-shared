@@ -103,8 +103,9 @@ exports.parseDate = (paramsNames
 
             const reqParams = !parseBody ? req.query : req.body;
 
-            reqParams[dateFormatParamName] = reqParams[dateFormatParamName] || 
-                dateUtil.defaultTextFormat;
+            reqParams[dateFormatParamName] = reqParams[dateFormatParamName] 
+                || req.query[dateFormatParamName]
+                || dateUtil.defaultTextFormat;
 
             paramsNames.forEach(paramName => {
 
