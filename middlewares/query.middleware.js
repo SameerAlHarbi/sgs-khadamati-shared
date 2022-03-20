@@ -175,3 +175,99 @@ exports.parseBoolean = (paramsNames, defaultValue = false) => {
     }
 
 }
+
+exports.parseNumberParams = ( paramNames
+    , required = true
+    , removeUnvalid = true
+    , validateInteger = true
+    , validateRange = true
+    , min = 1
+    , max = 10000
+    , roundInteger = true
+    , fromBody = false ) => {
+
+    return function(req, res, next) {
+
+        if(!paramsNames || paramsNames.length < 1) {
+            const error = new Error(`Invalid number parameters names!`);
+            error.httpStatusCode = 400;
+            return next(error);
+        }
+
+        const reqParams = !fromBody ? req.query : req.body;
+
+        for (let paramName of paramNames) {
+
+            if(isNaN(reqParams[paramName])) {
+                if(required === true) {  
+                    const error = new Error(`${paramName} is required!`);
+                    error.httpStatusCode = 400;
+                    return next(error);
+                } else if(removeUnvalid) {
+                    delete reqParams[paramName] ;
+                }
+                continue;
+            }
+
+            reqParams[paramName] = +reqParams[paramName];
+            
+            if(!Number.isInteger(reqParams[paramName]) 
+                && validateInteger === true) {
+                    const error = new Error(`${paramName} is invalid integer!`);
+                    error.httpStatusCode = 400;
+                    return next(error);
+            }
+
+            if(reqParams[paramName] < min 
+                || reqParams[paramName] > max) {
+
+                if(validateRange  === true) {
+                    const error = new Error(`${paramName} is out of range!`);
+                    error.httpStatusCode = 400;
+                    return next(error);
+                } else if(removeUnvalid) {
+                    delete reqParams[paramName] ;
+                    continue;
+                }
+            }
+
+
+
+
+            if((isNaN(reqParams[paramName])
+                    && required === true) 
+            || (!Number.isInteger(+reqParams[paramName]) 
+                    && validateInteger)
+            || (validateInteger)) {
+
+                if(required === true) {
+                    const error = new Error(`${paramName} is required!`);
+                    error.httpStatusCode = 400;
+                    return next(error);
+                }
+
+                if(removeUnvalid) {
+                    delete reqParams[paramName] ;
+                }
+
+                continue;
+            }
+
+            reqParams[paramName] = +reqParams[paramName];
+
+            if(!Number.isInteger(reqParams[paramName])){
+                
+                if(validateInteger === true) {
+                    const error = new Error(`${paramName} is invalid!`);
+                    error.httpStatusCode = 400;
+                    return next(error);
+                }
+
+            }
+
+        }
+
+
+        next();
+    }
+}
