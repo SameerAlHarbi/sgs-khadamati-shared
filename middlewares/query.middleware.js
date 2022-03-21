@@ -183,7 +183,7 @@ exports.parseNumberParams = ( paramNames
     , validateRange = true
     , min = 1
     , max = 10000
-    , roundInteger = true
+    , parseInteger = 'non' // 'non|round|floor|ceil'
     , fromBody = false ) => {
 
     return function(req, res, next) {
@@ -219,55 +219,29 @@ exports.parseNumberParams = ( paramNames
             }
 
             if(reqParams[paramName] < min 
-                || reqParams[paramName] > max) {
-
-                if(validateRange  === true) {
+                || reqParams[paramName] > max
+                && validateRange  === true) {
                     const error = new Error(`${paramName} is out of range!`);
                     error.httpStatusCode = 400;
                     return next(error);
-                } else if(removeUnvalid) {
-                    delete reqParams[paramName] ;
-                    continue;
-                }
             }
 
-
-
-
-            if((isNaN(reqParams[paramName])
-                    && required === true) 
-            || (!Number.isInteger(+reqParams[paramName]) 
-                    && validateInteger)
-            || (validateInteger)) {
-
-                if(required === true) {
-                    const error = new Error(`${paramName} is required!`);
-                    error.httpStatusCode = 400;
-                    return next(error);
+            if(parseInteger !== 'non') {
+                switch(parseInteger) {
+                    case 'round':
+                        reqParams[paramName] = Math.round(reqParams[paramName]);
+                        break;
+                    case 'floor':
+                        reqParams[paramName] = Math.floor(reqParams[paramName]);
+                        break;
+                    default:
+                        reqParams[paramName] = Math.ceil(reqParams[paramName]);
                 }
-
-                if(removeUnvalid) {
-                    delete reqParams[paramName] ;
-                }
-
-                continue;
-            }
-
-            reqParams[paramName] = +reqParams[paramName];
-
-            if(!Number.isInteger(reqParams[paramName])){
+            }          
                 
-                if(validateInteger === true) {
-                    const error = new Error(`${paramName} is invalid!`);
-                    error.httpStatusCode = 400;
-                    return next(error);
-                }
-
-            }
-
         }
-
 
         next();
     }
+
 }
