@@ -252,6 +252,8 @@ exports.validateEnums = ( paramName
     , defaultValue = undefined
     , fromBody = false  ) => {
 
+    return function(req, res, next) {
+
         if(!paramName) {
             const error = new Error(`Invalid parameter name!`);
             error.httpStatusCode = 500;
@@ -264,7 +266,7 @@ exports.validateEnums = ( paramName
             return next(error);
         }
 
-        const reqParam = !fromBody ? req.query[paramName] : req.body[paramName];
+        let reqParam = !fromBody ? req.query[paramName] : req.body[paramName];
 
         if(!reqParam) {
             if(required === true) {
@@ -286,5 +288,6 @@ exports.validateEnums = ( paramName
         }
 
         return next();
+    }
 }
 
