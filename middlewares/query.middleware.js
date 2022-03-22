@@ -266,25 +266,25 @@ exports.validateEnums = ( paramName
             return next(error);
         }
 
-        let reqParam = !fromBody ? req.query[paramName] : req.body[paramName];
+        const reqParam = !fromBody ? req.query : req.body;
 
-        if(!reqParam) {
+        if(!reqParam[paramName]) {
             if(required === true) {
                 const error = new Error(`${paramName} is required!`);
                 error.httpStatusCode = 400;
                 return next(error);
             }
-            reqParam = defaultValue;
+            reqParam[paramName] = defaultValue;
         } else if(!enumNames.find(enumName => 
                 enumName.toString().toUpperCase() ===
-                 reqParam.toString().toUpperCase())){
+                 reqParam[paramName].toString().toUpperCase())){
             const error = new Error(`${paramName} is invalid!`);
             error.httpStatusCode = 400;
             return next(error);
         }
 
-        if(!isNaN(reqParam)) {
-            reqParam = +reqParam;
+        if(!isNaN(reqParam[paramName])) {
+            reqParam[paramName] = +reqParam[paramName];
         }
 
         return next();
