@@ -176,7 +176,7 @@ exports.parseBoolean = (paramsNames, defaultValue = false) => {
 
 }
 
-exports.parseNumberParams = ( paramNames
+exports.parseNumberParams = ( paramsNames
     , required = true
     , removeUnvalid = true
     , validateInteger = true
@@ -196,7 +196,7 @@ exports.parseNumberParams = ( paramNames
 
         const reqParams = !fromBody ? req.query : req.body;
 
-        for (let paramName of paramNames) {
+        for (let paramName of paramsNames) {
 
             if(isNaN(reqParams[paramName])) {
                 if(required === true) {  
@@ -241,7 +241,50 @@ exports.parseNumberParams = ( paramNames
                 
         }
 
-        next();
+       return next();
     }
 
 }
+
+exports.validateEnums = ( paramName 
+    , enumNames
+    , required = true
+    , defaultValue = undefined
+    , fromBody = false  ) => {
+
+        if(!paramName) {
+            const error = new Error(`Invalid parameter name!`);
+            error.httpStatusCode = 500;
+            return next(error);
+        }
+
+        if(!enumNames || enumNames.length < 1) {
+            const error = new Error(`Invalid enum names!`);
+            error.httpStatusCode = 500;
+            return next(error);
+        }
+
+        const reqParam = !fromBody ? req.query[paramName] : req.body[paramName];
+
+        if(!reqParam) {
+            if(required === true) {
+                const error = new Error(`${paramName} is required!`);
+                error.httpStatusCode = 400;
+                return next(error);
+            }
+            reqParam = defaultValue;
+        } else if(!enumNames.find(enumName => 
+                enumName.toString().toUpperCase() ===
+                 reqParam.toString().toUpperCase())){
+            const error = new Error(`${paramName} is invalid!`);
+            error.httpStatusCode = 400;
+            return next(error);
+        }
+
+        if(!isNaN(reqParam)) {
+            reqParam = +reqParam;
+        }
+
+        return next();
+}
+
