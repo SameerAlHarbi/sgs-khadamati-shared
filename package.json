@@ -1,8 +1,9 @@
 {
   "name": "@abujude/sgs-khadamati",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "shared middlewares and utilities for sgs khadamati",
-  "main": "index.js",
+  "main": "index",
+  "typings": "index",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
