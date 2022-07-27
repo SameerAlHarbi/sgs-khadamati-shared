@@ -1,67 +1,70 @@
-const dateUtil = require('../utils/date.util');
+const dateUtil = require("../utils/date.util");
 
 exports.parseQuery = (req, res, next) => {
-    
-    req.query.lang = req.query.lang ?  req.query.lang.toUpperCase() : 'A';
+  req.query.lang = req.query.lang ? req.query.lang.toUpperCase() : "A";
 
-    if(req.query.ids)
-        req.query.ids = req.query.ids.split(',');
+  if (req.query.ids) req.query.ids = req.query.ids.split(",");
 
-    if(req.query.employeesIds)
-        req.query.employeesIds = req.query.employeesIds.split(',');
+  if (req.query.employeesIds)
+    req.query.employeesIds = req.query.employeesIds.split(",");
 
-    req.query.dateFormat = req.query.dateFormat ||
-        dateUtil.defaultTextFormat;
+  req.query.dateFormat = req.query.dateFormat || dateUtil.defaultTextFormat;
 
-    if(req.query.fromDate)  
-        req.query.fromDate = dateUtil.parseDate(req.query.fromDate, 
-            req.query.dateFormat);
+  if (req.query.fromDate)
+    req.query.fromDate = dateUtil.parseDate(
+      req.query.fromDate,
+      req.query.dateFormat
+    );
 
-    if(req.query.toDate)  
-        req.query.toDate = dateUtil.parseDate(req.query.toDate, 
-            req.query.dateFormat);
+  if (req.query.toDate)
+    req.query.toDate = dateUtil.parseDate(
+      req.query.toDate,
+      req.query.dateFormat
+    );
 
-    if(req.query.registerFromDate)
-        req.query.registerFromDate = dateUtil.parseDate(req.query.registerFromDate, 
-            req.query.dateFormat);
+  if (req.query.registerFromDate)
+    req.query.registerFromDate = dateUtil.parseDate(
+      req.query.registerFromDate,
+      req.query.dateFormat
+    );
 
-    if(req.query.registerToDate)
-        req.query.registerToDate = dateUtil.parseDate(req.query.registerToDate, 
-            req.query.dateFormat);
+  if (req.query.registerToDate)
+    req.query.registerToDate = dateUtil.parseDate(
+      req.query.registerToDate,
+      req.query.dateFormat
+    );
 
-    if(req.query.Types)
-        req.query.Types = req.query.Types.split(',');
+  if (req.query.Types) req.query.Types = req.query.Types.split(",");
 
-    if(req.query.effectDate)
-        req.query.effectDate = dateUtil.parseDate(req.query.effectDate, 
-            req.query.dateFormat);
+  if (req.query.effectDate)
+    req.query.effectDate = dateUtil.parseDate(
+      req.query.effectDate,
+      req.query.dateFormat
+    );
 
-    next();
-}
+  next();
+};
 
 exports.validateNumberId = (req, res, next) => {
+  if (isNaN(req.params.id)) {
+    const error = new Error("Invalid id!");
+    error.httpStatusCode = 400;
+    return next(error);
+  }
 
-    if(isNaN(req.params.id)) {
-
-        const error = new Error('Invalid id!');
-        error.httpStatusCode = 400;
-        return next(error);
-    }
-
-    next();
-}
+  next();
+};
 
 exports.validateNumberParam = (paramName) => {
-    return function(req, res, next) {
-        if(isNaN(req.params[paramName]))
-        {
-            const error = new Error(`Invalid ${paramName}!`);
-            error.httpStatusCode = 400;
-            return next(error);
-        }
-        next();
+  return function (req, res, next) {
+    if (isNaN(req.params[paramName])) {
+      const error = new Error(`Invalid ${paramName}!`);
+      error.httpStatusCode = 400;
+      return next(error);
     }
-}
+    next();
+  };
+};
 
 /**
  * Middleware function that set the default language for the request.
@@ -69,15 +72,15 @@ exports.validateNumberParam = (paramName) => {
  * @param {string} paramName - The language parameter name in the request object.
  * @returns {function} Middleware function.
  */
-exports.setLanguage = (defaultLanguage = 'A', paramName = 'lang') => {
+exports.setLanguage = (defaultLanguage = "A", paramName = "lang") => {
+  return function (req, res, next) {
+    req.query[paramName] = req.query[paramName]
+      ? req.query[paramName].toUpperCase()
+      : defaultLanguage;
 
-    return function(req, res, next) {
-
-        req.query[paramName] = req.query[paramName] ?  req.query[paramName].toUpperCase() : defaultLanguage;
-
-        next();
-    }
-}
+    next();
+  };
+};
 
 /**
  * Middleware function that parse the specified dates parameters in the request object to dates objects.
@@ -87,42 +90,44 @@ exports.setLanguage = (defaultLanguage = 'A', paramName = 'lang') => {
  * @param {boolean} utc -Parse date as utc.
  * @return {function} Middleware function.
  */
-exports.parseDate = (paramsNames
-    , dateFormatParamName = 'dateFormat'
-    , removeNaN = true
-    , utc = false
-    , parseBody = false) => {
+exports.parseDate = (
+  paramsNames,
+  dateFormatParamName = "dateFormat",
+  removeNaN = true,
+  utc = false,
+  parseBody = false
+) => {
+  return function (req, res, next) {
+    if (!paramsNames || paramsNames.length < 1) {
+      const error = new Error(`Invalid dates parameters names!`);
+      error.httpStatusCode = 400;
+      return next(error);
+    }
 
-        return function(req, res, next) {
-            
-            if(!paramsNames || paramsNames.length < 1) {
-                const error = new Error(`Invalid dates parameters names!`);
-                error.httpStatusCode = 400;
-                return next(error);
-            }
+    const reqParams = !parseBody ? req.query : req.body;
 
-            const reqParams = !parseBody ? req.query : req.body;
+    reqParams[dateFormatParamName] =
+      reqParams[dateFormatParamName] ||
+      req.query[dateFormatParamName] ||
+      dateUtil.defaultTextFormat;
 
-            reqParams[dateFormatParamName] = reqParams[dateFormatParamName] 
-                || req.query[dateFormatParamName]
-                || dateUtil.defaultTextFormat;
+    paramsNames.forEach((paramName) => {
+      if (reqParams[paramName]) {
+        reqParams[paramName] = dateUtil.parseDate(
+          reqParams[paramName],
+          reqParams[dateFormatParamName],
+          utc
+        );
 
-            paramsNames.forEach(paramName => {
-
-                if(reqParams[paramName]) {
-                    reqParams[paramName] = dateUtil.parseDate(reqParams[paramName], 
-                        reqParams[dateFormatParamName], utc);
-
-                    if (isNaN(reqParams[paramName].getTime()) && removeNaN) {
-                        delete reqParams[paramName] ;
-                    }
-                }
-
-            });
-
-            next();
+        if (isNaN(reqParams[paramName].getTime()) && removeNaN) {
+          delete reqParams[paramName];
         }
-}
+      }
+    });
+
+    next();
+  };
+};
 
 /**
  * Middleware function that split the specified parameters in the request object to array of strings.
@@ -130,23 +135,23 @@ exports.parseDate = (paramsNames
  * @param {string} symbol - Seplit character.
  * @return {function} Middleware function..
  */
-exports.split = (paramsNames, symbol = ',') => {
-    return function(req, res, next) {
-
-        if(!paramsNames || paramsNames.length < 1) {
-            const error = new Error(`Invalid parameters names!`);
-            error.httpStatusCode = 400;
-            return next(error);
-        }
-
-        paramsNames.forEach(paramName => {
-            req.query[paramName] = req.query[paramName] ?
-                 req.query[paramName].split(symbol) : [];
-        });
-
-        return next();
+exports.split = (paramsNames, symbol = ",") => {
+  return function (req, res, next) {
+    if (!paramsNames || paramsNames.length < 1) {
+      const error = new Error(`Invalid parameters names!`);
+      error.httpStatusCode = 400;
+      return next(error);
     }
-}
+
+    paramsNames.forEach((paramName) => {
+      req.query[paramName] = req.query[paramName]
+        ? req.query[paramName].split(symbol)
+        : [];
+    });
+
+    return next();
+  };
+};
 
 /**
  * Middleware function that parse the specified boolean parameters in the request object to boolean objects.
@@ -155,23 +160,19 @@ exports.split = (paramsNames, symbol = ',') => {
  * @returns Middleware function..
  */
 exports.parseBoolean = (paramsNames, defaultValue = false) => {
-
-    return function(req, res, next) {
-
-        if(!paramsNames || paramsNames.length < 1) {
-            const error = new Error(`Invalid parameters names!`);
-            error.httpStatusCode = 400;
-            return next(error);
-        }
-
-        paramsNames.forEach(paramName => {
-
-                req.query[paramName] = req.query[paramName] ? 
-                    req.query[paramName] === 'true' : defaultValue ;
-
-        });
-
-        return next();
+  return function (req, res, next) {
+    if (!paramsNames || paramsNames.length < 1) {
+      const error = new Error(`Invalid parameters names!`);
+      error.httpStatusCode = 400;
+      return next(error);
     }
 
-}
+    paramsNames.forEach((paramName) => {
+      req.query[paramName] = req.query[paramName]
+        ? req.query[paramName] === "true"
+        : defaultValue;
+    });
+
+    return next();
+  };
+};
